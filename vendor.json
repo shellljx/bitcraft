@@ -1,0 +1,104 @@
+{
+    "source": "third_party",
+    "out": "third_party/out",
+    "vendors": [
+        {
+            "name": "zlib",
+            "cmake": {
+                "targets": [
+                    "zlibstatic"
+                ],
+                "arguments": [
+                    "-DCMAKE_C_FLAGS=\"-w\""
+                ],
+                "includes": [
+                    "${SOURCE_DIR}/zlib.h",
+                    "${BUILD_DIR}/zconf.h"
+                ]
+            }
+        },
+        {
+            "name": "libpng",
+            "deps": {
+                "ZLIB": "zlib"
+            },
+            "cmake": {
+                "targets": [
+                    "png_static"
+                ],
+                "arguments": [
+                    "-DPNG_BUILD_ZLIB=ON",
+                    "-DPNG_ARM_NEON=on"
+                ],
+                "includes": [
+                    "${SOURCE_DIR}/png.h",
+                    "${SOURCE_DIR}/pngconf.h",
+                    "${BUILD_DIR}/pnglibconf.h"
+                ],
+                "platforms": [
+                    "ios",
+                    "mac"
+                ]
+            }
+        },
+        {
+            "name": "harfbuzz",
+            "cmake": {
+                "targets": [
+                    "harfbuzz"
+                ],
+                "arguments": [
+                    "-DHB_HAVE_FREETYPE=OFF",
+                    "-DHB_HAVE_CORETEXT=OFF",
+                    "-Wno-dev",
+                    "-DCMAKE_CXX_FLAGS=\"-w -DHB_LEAN -DHB_MINI -DHB_NO_UCD_UNASSIGNED -DNDEBUG -D__OPTIMIZE_SIZE__\""
+                ]
+            }
+        },
+        {
+            "name": "freetype",
+            "deps": {
+                "ZLIB": "zlib",
+                "PNG": "libpng"
+            },
+            "cmake": {
+                "targets": [
+                    "freetype"
+                ],
+                "arguments": [
+                    "-DCMAKE_DISABLE_FIND_PACKAGE_BZip2=TRUE",
+                    "-DCMAKE_DISABLE_FIND_PACKAGE_HarfBuzz=TRUE",
+                    "-DCMAKE_C_FLAGS=\"-w\""
+                ]
+            }
+        },
+        {
+            "name": "glfw",
+            "cmake": {
+                "targets": [
+                    "glfw"
+                ],
+                "arguments": [
+                    "-DCMAKE_C_FLAGS=\"-w\"",
+                    "-DGLFW_BUILD_DOCS=OFF",
+                    "-DGLFW_BUILD_EXAMPLES=OFF"
+                ],
+                "includes": [
+                    "${SOURCE_DIR}/include"
+                ]
+            }
+        },
+        {
+            "name": "glm",
+            "cmake": {
+                "targets": [
+                    "glm"
+                ],
+                "arguments": [
+                    "-DCMAKE_C_FLAGS=\"-w\"",
+                    "-DGLM_ENABLE_CXX_17=ON"
+                ]
+            }
+        }
+    ]
+}
