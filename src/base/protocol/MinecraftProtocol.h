@@ -7,24 +7,30 @@
 
 #include <string>
 #include "ConnectSession.h"
-#include "base/codec/Codec.h"
+#include "base/codec/PacketCodec.h"
+#include "base/protocol/ClientBoundPackets.h"
 
 namespace bitcraft {
-class MinecraftProtocol : ConnectSession::Listener {
+class MinecraftProtocol : public PacketHandler<MinecraftProtocol> {
  public:
   static std::shared_ptr<MinecraftProtocol> Make(const std::string &ip, int port, const std::string &version);
   ~MinecraftProtocol();
 
   void connect();
- protected:
-  void handleConnected() override;
-  void handleInputMessage(std::unique_ptr<ByteData> data) override;
+  void handleConnected();
+
+  [[nodiscard]] PacketCodec *getPacketCodec() const {
+    return packetCodec;
+  }
+ public:
+  void handle(SetCompressionPacket &packet);
+  void handle(LoginSuccessPacket &packet);
  private:
   MinecraftProtocol(const std::string &ip, int port, std::string version);
  private:
   std::string protocolVersion;
-  std::shared_ptr<ConnectSession> session;
-  std::shared_ptr<Codec> codec;
+  ConnectSession *connectSession;
+  PacketCodec *packetCodec;
 };
 }
 #endif //BITCRAFT_MAC_MINECRAFTPROTOCOL_H

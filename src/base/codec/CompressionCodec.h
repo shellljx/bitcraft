@@ -6,18 +6,21 @@
 #include "base/io/EncodeStream.h"
 #include "base/io/DecodeStream.h"
 
-namespace bitcraft{
+namespace bitcraft {
 class CompressionCodec {
  public:
-  std::unique_ptr<ByteData> decode(DecodeStream& in);
+  CompressionCodec();
+  std::unique_ptr<ByteData> decode(DecodeStream &in) const;
+  std::unique_ptr<ByteData> encode(std::unique_ptr<ByteData> data) const;
 
-  void setEnable(bool enable){
-    enable_ = enable;
+  void setThreshold(int threshold) {
+    compressionThreshold = threshold;
   }
 
  private:
-  std::unique_ptr<ByteData> deCompression(DecodeStream & in, int uLength);
+  static std::unique_ptr<ByteData> compression(std::unique_ptr<ByteData> data);
+  static std::unique_ptr<ByteData> deCompression(DecodeStream &in, int uLength);
  private:
-  bool enable_ = false;
+  int compressionThreshold;
 };
 }

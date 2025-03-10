@@ -5,7 +5,7 @@
 #pragma once
 #include <glm/glm.hpp>
 #include "glm/vec4.hpp"
-#include "base/protocol/ingame/clientbound/chunk/ServerChunkDataPacket.h"
+#include "base/protocol/ClientBoundPackets.h"
 #include "Face.h"
 
 namespace bitcraft{

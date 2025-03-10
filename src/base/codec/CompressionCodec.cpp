@@ -8,8 +8,9 @@
 
 namespace bitcraft {
 
-std::unique_ptr<ByteData> CompressionCodec::decode(DecodeStream &in) {
-  if (enable_) {
+CompressionCodec::CompressionCodec() : compressionThreshold(-1) {}
+std::unique_ptr<ByteData> CompressionCodec::decode(DecodeStream &in) const {
+  if (compressionThreshold > 0) {
     auto dataLength = in.readVarInt();
     if (dataLength <= 0) {
       //datalength is zero without compression
@@ -24,7 +25,51 @@ std::unique_ptr<ByteData> CompressionCodec::decode(DecodeStream &in) {
   }
 }
 
-std::unique_ptr<ByteData> CompressionCodec::deCompression(DecodeStream& in, int uLength) {
+std::unique_ptr<ByteData> CompressionCodec::encode(std::unique_ptr<ByteData> data) const {
+  if (compressionThreshold > 0) {
+    auto stream = EncodeStream();
+    if (data->length() < compressionThreshold) {
+      stream.writeVarInt(0);
+      stream.writeByteData(data.get());
+    } else {
+      stream.writeVarInt(data->length());
+      auto compressedData = compression(std::move(data));
+      stream.writeByteData(compressedData.get());
+    }
+    return stream.release();
+  }
+  return data;
+}
+
+std::unique_ptr<ByteData> CompressionCodec::compression(std::unique_ptr<ByteData> data) {
+  int ret;
+  int chunk = 1024 * 6;
+  unsigned have;
+  z_stream strm;
+  memset(&strm, 0, sizeof(strm));
+  ret = deflateInit(&strm, Z_DEFAULT_COMPRESSION);
+  if (ret != Z_OK) {
+    throw std::runtime_error("deflate init error");
+  }
+  unsigned char input[data->length()];
+  memcpy(input, data->data(), data->length());
+  unsigned char output[chunk];
+  EncodeStream outStream;
+
+  strm.avail_in = data->length();
+  strm.next_in = input;
+  do {
+    strm.avail_out = chunk;
+    strm.next_out = output;
+    ret = deflate(&strm, Z_FINISH);
+    have = chunk - strm.avail_out;
+    outStream.writeBytes(output, have);
+  } while (strm.avail_out == 0);
+  deflateEnd(&strm);
+  return outStream.release();
+}
+
+std::unique_ptr<ByteData> CompressionCodec::deCompression(DecodeStream &in, int uLength) {
   int ret;
   int chunk = 1024 * 6;
   unsigned have;

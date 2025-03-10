@@ -2,7 +2,7 @@
 // Created by 李金祥 on 2022/5/29.
 //
 
-#include "StatusPongPacket.h"
+#include "base/protocol/ClientBoundPackets.h"
 
 namespace bitcraft {
 StatusPongPacket::StatusPongPacket() : Packet(0x01) {

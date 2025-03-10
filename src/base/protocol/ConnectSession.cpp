@@ -3,17 +3,15 @@
 //
 
 #include "ConnectSession.h"
+#include "MinecraftProtocol.h"
 #include <asio/connect.hpp>
 #include <asio/write.hpp>
 #include <utility>
 
 namespace bitcraft {
-std::shared_ptr<ConnectSession> ConnectSession::Make(const std::string &ip, uint16_t port, Listener *listener) {
-  return std::shared_ptr<ConnectSession>(new ConnectSession(ip, port, listener));
-}
 
-ConnectSession::ConnectSession(std::string ip, uint16_t port, Listener *listener)
-    : socket(ioService), ip(std::move(ip)), port(port), listener(listener) {
+ConnectSession::ConnectSession(std::string ip, uint16_t port, MinecraftProtocol *protocol)
+    : socket(ioService), protocol(protocol), ip(std::move(ip)), port(port) {
   buffer = new uint8_t[512];
 }
 
@@ -45,7 +43,7 @@ void ConnectSession::post(std::unique_ptr<ByteData> data) {
 
 void ConnectSession::handleConnect(const asio::error_code &error) {
   if (!error) {
-    listener->handleConnected();
+    protocol->handleConnected();
     socket.async_read_some(asio::buffer(buffer, 512),
                            std::bind(&ConnectSession::handleRead,
                                      this,
@@ -58,7 +56,7 @@ void ConnectSession::handleConnect(const asio::error_code &error) {
 
 void ConnectSession::handleRead(const asio::error_code &error, std::size_t bytesTransferred) {
   if (!error) {
-    listener->handleInputMessage(ByteData::MakeWithoutCopy(buffer, bytesTransferred));
+    protocol->getPacketCodec()->decode(ByteData::MakeWithoutCopy(buffer, bytesTransferred));
   }
 }
 

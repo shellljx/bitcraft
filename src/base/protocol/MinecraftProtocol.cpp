@@ -6,11 +6,8 @@
 #include <functional>
 #include <memory>
 #include <utility>
-#include "base/io/DecodeStream.h"
 #include "base/protocol/handshake/HandshakePacket.h"
-#include "base/protocol/status/client/StatusRequestPacket.h"
-#include "base/protocol/status/server/StatusResponsePacket.h"
-#include "base/protocol/login/client/LoginStartPacket.h"
+#include "base/protocol/login/serverbound/LoginStartPacket.h"
 
 namespace bitcraft {
 
@@ -25,33 +22,39 @@ std::shared_ptr<MinecraftProtocol> MinecraftProtocol::Make(const std::string &ip
 }
 
 MinecraftProtocol::MinecraftProtocol(const std::string &ip, int port, std::string version)
-    : protocolVersion(std::move(version)) {
-  session = ConnectSession::Make(ip, port, this);
-  codec = std::make_shared<Codec>();
+    : protocolVersion(std::move(version)), connectSession(nullptr), packetCodec(nullptr) {
+  packetCodec = new PacketCodec();
+  registerPacket<SetCompressionPacket>();
+  registerPacket<LoginSuccessPacket>();
+  packetCodec->registerHandler(this);
+  connectSession = new ConnectSession(ip, port, this);
 }
 
 MinecraftProtocol::~MinecraftProtocol() {
-
+  delete connectSession;
+  delete packetCodec;
 }
 
 void MinecraftProtocol::handleConnected() {
-  codec->setState(ProtocolStatus::LOGIN);
+  packetCodec->setState(ProtocolStatus::LOGIN);
   auto handshakePacket = HandshakePacket::Make(
-      769, session->getHost(), session->getPort(), static_cast<int>(ProtocolStatus::LOGIN)
+      769, connectSession->getHost(), connectSession->getPort(), static_cast<int>(ProtocolStatus::LOGIN)
   );
-  session->post(codec->encode(handshakePacket));
+  connectSession->post(packetCodec->encode(handshakePacket));
   auto loginStartPacket = LoginStartPacket::Make("shell");
-  session->post(codec->encode(loginStartPacket));
+  connectSession->post(packetCodec->encode(loginStartPacket));
 }
 
-void MinecraftProtocol::handleInputMessage(std::unique_ptr<ByteData> data) {
-  codec->decode(std::move(data), [=](std::unique_ptr<Packet> packet) -> void {
-    auto id = packet->getPacketId();
-    std::printf("input %d\n", id);
-  });
+void MinecraftProtocol::handle(SetCompressionPacket& packet) {
+  packetCodec->setCompressionThreshold(packet.getCompressionThreshold());
+}
+
+void MinecraftProtocol::handle(LoginSuccessPacket& packet) {
+  auto loginAcknow = std::make_shared<LoginAcknowledgedPacket>();
+  connectSession->post(packetCodec->encode(loginAcknow));
 }
 
 void MinecraftProtocol::connect() {
-  session->connect();
+  connectSession->connect();
 }
 }

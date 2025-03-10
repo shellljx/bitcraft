@@ -5,13 +5,9 @@
 
 #pragma once
 
-#include "../io/EncodeStream.h"
-#include "../io/DecodeStream.h"
+#include "base/io/EncodeStream.h"
+#include "base/io/DecodeStream.h"
 
 namespace bitcraft {
-
-class SizerCodec {
- public:
-  DecodeStream decode(DecodeStream& in);
-};
+DecodeStream sizerDecode(DecodeStream &in);
 }

@@ -11,18 +11,12 @@
 #include "base/io/ByteData.h"
 
 namespace bitcraft {
+class MinecraftProtocol;
 class ConnectSession {
  public:
-  class Listener {
-   public:
-    virtual void handleConnected() {
-
-    }
-    virtual void handleInputMessage(std::unique_ptr<ByteData> data) {
-    }
-  };
-  static std::shared_ptr<ConnectSession> Make(const std::string &ip, uint16_t port, Listener *listener);
+  ConnectSession(std::string ip, uint16_t port, MinecraftProtocol *protocol);
   ~ConnectSession();
+
   void connect();
   void post(std::unique_ptr<ByteData> data);
 
@@ -34,7 +28,7 @@ class ConnectSession {
     return port;
   }
  private:
-  ConnectSession(std::string ip, uint16_t port, Listener *listener);
+
   void handleConnect(const asio::error_code &error);
   void handleRead(const asio::error_code &error, std::size_t bytesTransferred);
   void handleWrite(const asio::error_code &error);
@@ -42,8 +36,8 @@ class ConnectSession {
   asio::io_service ioService;
   std::thread loopThread;
   asio::ip::tcp::socket socket;
-  uint8_t *buffer;
-  Listener *listener;
+  MinecraftProtocol* protocol;
+  uint8_t *buffer = nullptr;
   std::string ip;
   uint16_t port;
 };

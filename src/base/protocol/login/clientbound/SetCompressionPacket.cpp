@@ -2,7 +2,7 @@
 // Created by 李金祥 on 2022/5/29.
 //
 
-#include "SetCompressionPacket.h"
+#include "base/protocol/ClientBoundPackets.h"
 
 namespace bitcraft {
 SetCompressionPacket::SetCompressionPacket() : Packet(0x03), threshold(0) {

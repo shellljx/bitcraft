@@ -2,10 +2,11 @@
 // Created by 李金祥 on 2022/6/7.
 //
 
-#include "ServerChunkDataPacket.h"
-
 #include <memory>
-#include "base/model/nbt/Tag.h"
+#include "base/protocol/ClientBoundPackets.h"
+#include "base/model/nbt/TagCompound.h"
+#include "base/model/world/BlockEntityInfo.h"
+#include "base/model/world/LightUpdateData.h"
 
 namespace bitcraft {
 ServerChunkDataPacket::ServerChunkDataPacket() : Packet(0x22), x_(0), z_(0) {

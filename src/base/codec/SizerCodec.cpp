@@ -5,7 +5,7 @@
 #include "SizerCodec.h"
 namespace bitcraft {
 
-DecodeStream SizerCodec::decode(DecodeStream &in) {
+DecodeStream sizerDecode(DecodeStream &in) {
   auto oldPosition = in.position();
   //check validate varint
   bool notVarint = false;

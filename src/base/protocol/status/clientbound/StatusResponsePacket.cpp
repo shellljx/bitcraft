@@ -2,7 +2,7 @@
 // Created by 李金祥 on 2022/5/28.
 //
 
-#include "StatusResponsePacket.h"
+#include "base/protocol/ClientBoundPackets.h"
 
 namespace bitcraft {
 StatusResponsePacket::StatusResponsePacket() : Packet(0) {
