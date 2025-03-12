@@ -57,6 +57,14 @@ void ConnectSession::handleConnect(const asio::error_code &error) {
 void ConnectSession::handleRead(const asio::error_code &error, std::size_t bytesTransferred) {
   if (!error) {
     protocol->getPacketCodec()->decode(ByteData::MakeWithoutCopy(buffer, bytesTransferred));
+
+    socket.async_read_some(asio::buffer(buffer, 512),
+                           std::bind(&ConnectSession::handleRead,
+                                     this,
+                                     std::placeholders::_1,
+                                     std::placeholders::_2));
+  } else {
+    socket.close();
   }
 }
 

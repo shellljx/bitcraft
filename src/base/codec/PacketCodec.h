@@ -7,6 +7,8 @@
 #include "SizerCodec.h"
 #include "base/protocol/Packet.h"
 #include <typeindex>
+#include <unordered_map>
+#include <vector>
 
 namespace bitcraft {
 class AbsPacketHandler {
@@ -26,6 +28,11 @@ class PacketHandler : public AbsPacketHandler {
   }
 
  protected:
+  template<typename... PacketTypes>
+  void registerPackets() {
+    (registerPacket<PacketTypes>(), ...);
+  }
+
   template<typename PacketType>
   void registerPacket() {
     handlers[std::type_index(typeid(PacketType))] = [this](Packet &packet) {
@@ -44,7 +51,7 @@ class PacketHandler : public AbsPacketHandler {
   std::unordered_map<std::type_index, std::function<void(Packet &)>> handlers;
 };
 
-enum class ProtocolStatus { NONE = -1, HANDSHAKE = 0, STATUS = 1, LOGIN = 2, PLAY = 3 };
+enum class ProtocolStatus { NONE = -1, HANDSHAKE = 0, STATUS = 1, LOGIN = 2, PLAY = 3, Configuration = 4 };
 
 class EncryptionCodec;
 class CompressionCodec;
@@ -69,7 +76,7 @@ class PacketCodec : public PacketDispatcher {
  public:
   PacketCodec();
   void decode(std::unique_ptr<ByteData> data);
-  std::unique_ptr<ByteData> encode(std::shared_ptr<Packet> packet);
+  std::unique_ptr<ByteData> encode(Packet &packet);
   void setState(ProtocolStatus state);
   void setCompressionThreshold(int threshold);
  private:

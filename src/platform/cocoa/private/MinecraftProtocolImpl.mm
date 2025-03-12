@@ -22,4 +22,8 @@
     }
     return self;
 }
+
+-(void)connect {
+    _protocol->connect();
+}
 @end

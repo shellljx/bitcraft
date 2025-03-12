@@ -25,6 +25,9 @@ class MinecraftProtocol : public PacketHandler<MinecraftProtocol> {
  public:
   void handle(SetCompressionPacket &packet);
   void handle(LoginSuccessPacket &packet);
+  void handle(CustomPayloadPacket &packet);
+  void handle(UpdateEnabledFeaturesPacket &packet);
+  void handle(SelectKnownPacksPacket &packet);
  private:
   MinecraftProtocol(const std::string &ip, int port, std::string version);
  private:

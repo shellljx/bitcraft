@@ -2,8 +2,8 @@
 // Created by 李金祥 on 2022/6/11.
 //
 #pragma once
-#include "../io/DecodeStream.h"
-#include "../io/EncodeStream.h"
+#include "base/io/DecodeStream.h"
+#include "base/io/EncodeStream.h"
 
 namespace bitcraft {
 class ReadWriteable {

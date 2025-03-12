@@ -4,6 +4,7 @@
 
 #ifndef BITCRAFT_LINUX_SRC_BASE_PROTOCOL_CLIENTBOUNDPACKETS_H_
 #define BITCRAFT_LINUX_SRC_BASE_PROTOCOL_CLIENTBOUNDPACKETS_H_
+#include <vector>
 #include "Packet.h"
 namespace bitcraft {
 //status
@@ -140,6 +141,48 @@ class ServerChunkDataPacket : public Packet {
   std::unique_ptr<ByteData> chunkData_ = nullptr;
   std::vector<std::unique_ptr<BlockEntityInfo>> blockEntities_;
   std::unique_ptr<LightUpdateData> lightUpdateData_;
+};
+
+//configuration
+class CustomPayloadPacket : public Packet {
+ public:
+  CustomPayloadPacket();
+  ~CustomPayloadPacket() override;
+
+  void read(DecodeStream *stream) override;
+  void write(EncodeStream *stream) override;
+
+ private:
+  std::string identifier;
+  std::unique_ptr<ByteData> datas;
+};
+
+class UpdateEnabledFeaturesPacket : public Packet {
+ public:
+  UpdateEnabledFeaturesPacket();
+  ~UpdateEnabledFeaturesPacket() override = default;
+
+  void read(DecodeStream *stream) override;
+  void write(EncodeStream *stream) override;
+
+ private:
+  std::vector<std::string> featureFlags;
+};
+
+class KnownPack;
+class SelectKnownPacksPacket : public Packet {
+ public:
+  SelectKnownPacksPacket();
+  ~SelectKnownPacksPacket() override = default;
+
+  void read(DecodeStream *stream) override;
+  void write(EncodeStream *stream) override;
+
+  std::vector<std::shared_ptr<KnownPack>> getKnownPacks() const {
+    return knownPacks;
+  }
+ private:
+  std::vector<std::shared_ptr<KnownPack>> knownPacks;
 };
 }
 #endif //BITCRAFT_LINUX_SRC_BASE_PROTOCOL_CLIENTBOUNDPACKETS_H_

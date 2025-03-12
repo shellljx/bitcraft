@@ -32,10 +32,13 @@ list(APPEND BITCRAFT_INCLUDES third_party/zlib)
 file(GLOB_RECURSE SRC_FILES
         src/base/*.*
         src/rendering/*.*)
+file(GLOB PLATFORM_COMMON_FILES
+        src/platform/*.*)
 list(APPEND BITCRAFT_FILES ${SRC_FILES})
+list(APPEND BITCRAFT_FILES ${PLATFORM_COMMON_FILES})
 
 if (ANDROID)
-    file(GLOB_RECURSE PLATFORM_FILES src/platform/*.*)
+    file(GLOB_RECURSE PLATFORM_FILES src/platform/android/*.*)
     list(APPEND BITCRAFT_FILES ${PLATFORM_FILES})
 endif ()
 
@@ -53,6 +56,15 @@ if (ANDROID)
 else ()
     add_library(bitcraft STATIC ${BITCRAFT_FILES})
     merge_libraries_into(bitcraft ${BITCRAFT_STATIC_LIBS})
+endif ()
+
+if (ANDROID)
+    find_library(LOG_LIB log)
+    list(APPEND BITCRAFT_SHARED_LIBS ${LOG_LIB})
+    find_library(ANDROID_LIB android)
+    list(APPEND BITCRAFT_SHARED_LIBS ${ANDROID_LIB})
+    find_library(JNIGRAPHICS_LIB jnigraphics)
+    list(APPEND BITCRAFT_SHARED_LIBS ${JNIGRAPHICS_LIB})
 endif ()
 
 add_dependencies(bitcraft ${BITCRAFT_DEPEND_TARGETS})

@@ -27,6 +27,14 @@ std::shared_ptr<Packet> createClientBoundPacket(int id, ProtocolStatus status) {
       case 0x22:return std::shared_ptr<Packet>(new ServerChunkDataPacket());
       default:return nullptr;
     }
+  } else if (status == ProtocolStatus::Configuration) {
+    switch (id) {
+      case 0x00:return nullptr;
+      case 0x01:return std::shared_ptr<Packet>(new CustomPayloadPacket());
+      case 0x0C:return std::shared_ptr<Packet>(new UpdateEnabledFeaturesPacket());
+      case 0x0E:return std::shared_ptr<Packet>(new SelectKnownPacksPacket());
+      default:return nullptr;
+    }
   } else {
     return nullptr;
   }

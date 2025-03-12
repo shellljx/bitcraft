@@ -6,6 +6,7 @@
 #include "EncryptionCodec.h"
 #include "CompressionCodec.h"
 #include "base/protocol/PacketFactory.h"
+#include "base/utils/Log.h"
 
 namespace bitcraft {
 #define INPUT_BUFFER_CAPACITY 256
@@ -28,6 +29,9 @@ void PacketCodec::decode(std::unique_ptr<ByteData> data) {
     auto packetByteData = compressionCodec->decode(packetStream);
     decodePacket(std::move(packetByteData));
   }
+  if (decodeStream.bytesAvailable() > 0) {
+    inputStream->writeBytes(decodeStream.data(), decodeStream.bytesAvailable(), decodeStream.position());
+  }
 }
 
 void PacketCodec::decodePacket(const std::unique_ptr<ByteData> data) {
@@ -38,15 +42,17 @@ void PacketCodec::decodePacket(const std::unique_ptr<ByteData> data) {
     return;
   }
   packet->read(&decodeStream);
+  LOGI("decode packet id %d", packetId);
   dispatchPacket(*packet);
 }
 
-std::unique_ptr<ByteData> PacketCodec::encode(std::shared_ptr<Packet> packet) {
+std::unique_ptr<ByteData> PacketCodec::encode(Packet &packet) {
+  LOGI("encode packet id %d", packet.getPacketId());
   auto encodeStream = EncodeStream();
   //write Packet ID
-  encodeStream.writeVarInt(packet->getPacketId());
+  encodeStream.writeVarInt(packet.getPacketId());
   //write Packet
-  packet->write(&encodeStream);
+  packet.write(&encodeStream);
   auto encodeData = compressionCodec->encode(encodeStream.release());
 
   //write sizer
