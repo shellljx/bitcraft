@@ -8,6 +8,7 @@
 #include <utility>
 #include "base/protocol/handshake/HandshakePacket.h"
 #include "base/protocol/login/serverbound/LoginStartPacket.h"
+#include "base/protocol/configuration/serverbound/ServerboundSelectKnownPacksPacket.h"
 #include "base/protocol/data/KnownPack.h"
 #include "base/utils/Log.h"
 
@@ -25,12 +26,8 @@ std::shared_ptr<MinecraftProtocol> MinecraftProtocol::Make(const std::string &ip
 
 MinecraftProtocol::MinecraftProtocol(const std::string &ip, int port, std::string version)
     : protocolVersion(std::move(version)), connectSession(nullptr), packetCodec(nullptr) {
+  registerPackets();
   packetCodec = new PacketCodec();
-  registerPackets<SetCompressionPacket,
-                  LoginSuccessPacket,
-                  CustomPayloadPacket,
-                  UpdateEnabledFeaturesPacket,
-                  SelectKnownPacksPacket>();
   packetCodec->registerHandler(this);
   connectSession = new ConnectSession(ip, port, this);
 }
@@ -46,7 +43,7 @@ void MinecraftProtocol::handleConnected() {
       769, connectSession->getHost(), connectSession->getPort(), static_cast<int>(ProtocolStatus::LOGIN)
   );
   connectSession->post(packetCodec->encode(*handshakePacket));
-  auto loginStartPacket = LoginStartPacket::Make("shell");
+  auto loginStartPacket = LoginStartPacket::Make("BCHelloWorld");
   connectSession->post(packetCodec->encode(*loginStartPacket));
 }
 
@@ -71,10 +68,9 @@ void MinecraftProtocol::handle(bitcraft::UpdateEnabledFeaturesPacket &packet) {
 }
 
 void MinecraftProtocol::handle(bitcraft::SelectKnownPacksPacket &packet) {
-  for (auto &pack : packet.getKnownPacks()) {
-    auto name = pack->getNameSpace();
-    LOGI("handle packet SelectKnownPacksPacket %s", name.c_str());
-  }
+  auto sendP = std::make_shared<ServerboundSelectKnownPacksPacket>();
+  sendP->setKnownPacks({});
+  connectSession->post(packetCodec->encode(*sendP));
 }
 
 void MinecraftProtocol::connect() {

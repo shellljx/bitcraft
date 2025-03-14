@@ -178,11 +178,25 @@ class SelectKnownPacksPacket : public Packet {
   void read(DecodeStream *stream) override;
   void write(EncodeStream *stream) override;
 
-  std::vector<std::shared_ptr<KnownPack>> getKnownPacks() const {
+  [[nodiscard]] std::vector<std::shared_ptr<KnownPack>> getKnownPacks() const {
     return knownPacks;
   }
  private:
   std::vector<std::shared_ptr<KnownPack>> knownPacks;
+};
+
+class RegistryEntry;
+class ClientboundRegistryDataPacket : public Packet {
+ public:
+  ClientboundRegistryDataPacket();
+  ~ClientboundRegistryDataPacket() override = default;
+
+  void read(DecodeStream *stream) override;
+  void write(EncodeStream *stream) override;
+
+ private:
+  std::string identifier;
+  std::vector<std::shared_ptr<RegistryEntry>> entries;
 };
 }
 #endif //BITCRAFT_LINUX_SRC_BASE_PROTOCOL_CLIENTBOUNDPACKETS_H_

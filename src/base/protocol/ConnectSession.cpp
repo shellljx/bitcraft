@@ -69,12 +69,8 @@ void ConnectSession::handleRead(const asio::error_code &error, std::size_t bytes
 }
 
 void ConnectSession::handleWrite(const asio::error_code &error) {
-  if (!error) {
-    socket.async_read_some(asio::buffer(buffer, 512),
-                           std::bind(&ConnectSession::handleRead,
-                                     this,
-                                     std::placeholders::_1,
-                                     std::placeholders::_2));
+  if (error){
+    socket.close();
   }
 }
 

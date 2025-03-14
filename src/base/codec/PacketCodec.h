@@ -17,7 +17,7 @@ class AbsPacketHandler {
   virtual void handlePacket(Packet &) = 0;
 };
 
-template<typename Derived>
+template<typename Derived, typename AllPackets>
 class PacketHandler : public AbsPacketHandler {
  public:
   void handlePacket(Packet &packet) override {
@@ -28,9 +28,8 @@ class PacketHandler : public AbsPacketHandler {
   }
 
  protected:
-  template<typename... PacketTypes>
   void registerPackets() {
-    (registerPacket<PacketTypes>(), ...);
+    registerPacketsImpl(std::make_index_sequence<std::tuple_size_v<AllPackets>>{});
   }
 
   template<typename PacketType>
@@ -38,6 +37,12 @@ class PacketHandler : public AbsPacketHandler {
     handlers[std::type_index(typeid(PacketType))] = [this](Packet &packet) {
       handle(static_cast<PacketType &>(packet));
     };
+  }
+
+ private:
+  template<std::size_t... Indices>
+  void registerPacketsImpl(std::index_sequence<Indices...>) {
+    (registerPacket<std::tuple_element_t<Indices, AllPackets>>(), ...);
   }
 
  private:

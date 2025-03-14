@@ -11,7 +11,14 @@
 #include "base/protocol/ClientBoundPackets.h"
 
 namespace bitcraft {
-class MinecraftProtocol : public PacketHandler<MinecraftProtocol> {
+using LoinPackets = std::tuple<
+    SetCompressionPacket,
+    LoginSuccessPacket,
+    CustomPayloadPacket,
+    UpdateEnabledFeaturesPacket,
+    SelectKnownPacksPacket
+>;
+class MinecraftProtocol : public PacketHandler<MinecraftProtocol, LoinPackets> {
  public:
   static std::shared_ptr<MinecraftProtocol> Make(const std::string &ip, int port, const std::string &version);
   ~MinecraftProtocol();

@@ -9,7 +9,7 @@
 #include "base/utils/Log.h"
 
 namespace bitcraft {
-#define INPUT_BUFFER_CAPACITY 256
+#define INPUT_BUFFER_CAPACITY 512
 
 PacketCodec::PacketCodec() {
   inputStream = std::make_shared<EncodeStream>(INPUT_BUFFER_CAPACITY);
@@ -19,8 +19,8 @@ PacketCodec::PacketCodec() {
 void PacketCodec::decode(std::unique_ptr<ByteData> data) {
   auto decrypted = encryptionCodec->decode(std::move(data));
   inputStream->writeByteData(decrypted.get());
-  auto encoded = inputStream->release();
-  auto decodeStream = DecodeStream(encoded->data(), encoded->length());
+  auto inputData = inputStream->release();
+  auto decodeStream = DecodeStream(inputData->data(), inputData->length());
   while (decodeStream.bytesAvailable() > 0) {
     auto packetStream = sizerDecode(decodeStream);
     if (packetStream.data() == nullptr) {
@@ -41,8 +41,8 @@ void PacketCodec::decodePacket(const std::unique_ptr<ByteData> data) {
   if (packet == nullptr) {
     return;
   }
-  packet->read(&decodeStream);
   LOGI("decode packet id %d", packetId);
+  packet->read(&decodeStream);
   dispatchPacket(*packet);
 }
 

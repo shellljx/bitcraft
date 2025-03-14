@@ -15,7 +15,7 @@ void TagList::write(EncodeStream *stream) {
 }
 
 void TagList::read(DecodeStream *stream) {
-  tag_type_ = (TagType) stream->readInt8();
+  tag_type_ = (TagType) stream->readUint8();
   const int count = stream->readInt32();
 
   tags_ = std::vector<std::shared_ptr<Tag>>(count);

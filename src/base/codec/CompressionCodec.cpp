@@ -72,44 +72,39 @@ std::unique_ptr<ByteData> CompressionCodec::compression(std::unique_ptr<ByteData
 std::unique_ptr<ByteData> CompressionCodec::deCompression(DecodeStream &in, int uLength) {
   int ret;
   int chunk = 1024 * 6;
-  unsigned have;
+  auto buffer = new unsigned char [chunk];
   z_stream strm;
   memset(&strm, 0, sizeof(strm));
-
-  unsigned char input[in.bytesAvailable()];
-  uint32_t avaliable = in.bytesAvailable();
-  memcpy(input, in.readBytes(avaliable).data(), avaliable);
-
-  strm.avail_in = avaliable;
-  strm.next_in = input;
+  strm.next_in = const_cast<unsigned char *>(in.data()+in.position());
+  strm.avail_in = in.bytesAvailable();
+  strm.next_out = buffer;
+  strm.avail_out = static_cast<unsigned int>(chunk);
 
   ret = inflateInit(&strm);
   if (ret != Z_OK) {
     throw std::runtime_error("zlib init failed");
   }
 
-  unsigned char output[chunk];
-  EncodeStream outStream(uLength);
-  do {
-    strm.avail_out = chunk;
-    strm.next_out = output;
-    if (strm.avail_in == 0) {
-      inflateEnd(&strm);
-      return outStream.release();
-    }
+  EncodeStream outStream(512);
+  for (;;) {
     ret = inflate(&strm, Z_NO_FLUSH);
     switch (ret) {
-      case Z_OK:
-      case Z_STREAM_END:have = chunk - strm.avail_out;
-        outStream.writeBytes(output, have);
+      case Z_OK:outStream.writeBytes(buffer, chunk - strm.avail_out);
+        strm.next_out = buffer;
+        strm.avail_out = static_cast<unsigned int>(chunk);
+        if (strm.avail_in == 0) {
+          inflateEnd(&strm);
+          return outStream.release();
+        }
         break;
-      default: {
+      case Z_STREAM_END:outStream.writeBytes(buffer, chunk - strm.avail_out);
         inflateEnd(&strm);
-        throw std::runtime_error("zlib inflate error");
-      }
+        return outStream.release();
+        break;
+      default:inflateEnd(&strm);
+        throw std::runtime_error("Inflate decompression failed: " + std::string(strm.msg));
+        break;
     }
-  } while (strm.avail_out == 0);
-  inflateEnd(&strm);
-  return outStream.release();
+  }
 }
 }

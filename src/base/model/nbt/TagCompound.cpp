@@ -12,9 +12,9 @@ TagCompound::TagCompound(const std::string &name) : Tag(name) {
 TagCompound::~TagCompound() = default;
 
 std::unique_ptr<TagCompound> TagCompound::Create(DecodeStream *stream) {
-  const auto type = (TagType) stream->readInt8();
+  const auto type = (TagType) stream->readUint8();
   if (type == TagType::Compound) {
-    const auto name = stream->readUtfString();
+    const auto name = "";
     auto tagCompound = new TagCompound(name);
     tagCompound->read(stream);
     return std::unique_ptr<TagCompound>(tagCompound);
@@ -24,7 +24,7 @@ std::unique_ptr<TagCompound> TagCompound::Create(DecodeStream *stream) {
 
 void TagCompound::read(DecodeStream *stream) {
   while (true) {
-    const auto type = (TagType) stream->readInt8();
+    const auto type = (TagType) stream->readUint8();
 
     if (type == TagType::End) {
       break;

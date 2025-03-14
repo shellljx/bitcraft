@@ -12,6 +12,8 @@ void KnownPack::read(bitcraft::DecodeStream *stream) {
 }
 
 void KnownPack::write(bitcraft::EncodeStream *stream) {
-
+  stream->writeVarString(packNameSpace);
+  stream->writeVarString(packId);
+  stream->writeVarString(packVersion);
 }
 }
