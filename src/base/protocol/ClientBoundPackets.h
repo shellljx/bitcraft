@@ -6,6 +6,7 @@
 #define BITCRAFT_LINUX_SRC_BASE_PROTOCOL_CLIENTBOUNDPACKETS_H_
 #include <vector>
 #include "Packet.h"
+#include "base/model/nbt/Nbt.h"
 namespace bitcraft {
 //status
 class StatusPongPacket : public Packet {
@@ -137,7 +138,7 @@ class ServerChunkDataPacket : public Packet {
  private:
   int x_;
   int z_;
-  std::shared_ptr<TagCompound> heightMaps_ = nullptr;
+  std::shared_ptr<Tag> heightMaps_ = nullptr;
   std::unique_ptr<ByteData> chunkData_ = nullptr;
   std::vector<std::unique_ptr<BlockEntityInfo>> blockEntities_;
   std::unique_ptr<LightUpdateData> lightUpdateData_;

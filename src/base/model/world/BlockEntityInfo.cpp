@@ -21,6 +21,6 @@ void BlockEntityInfo::read(DecodeStream *stream) {
   int blockEntityY = stream->readInt16();
   type_ = stream->readVarInt();
   //nbt
-  nbt_ = TagCompound::Create(stream);
+  nbt_ = ReadNbt(stream);
 }
 }

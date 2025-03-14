@@ -3,13 +3,13 @@
 //
 
 #include "RegistryEntry.h"
-#include "base/model/nbt/TagCompound.h"
+#include "base/model/nbt/Nbt.h"
 namespace bitcraft {
 void RegistryEntry::read(bitcraft::DecodeStream *stream) {
   identifier = stream->readVarString();
   auto present = stream->readBoolean();
   if (present) {
-    nbt = TagCompound::Create(stream);
+    nbt = ReadNbt(stream);
   }
 }
 void RegistryEntry::write(bitcraft::EncodeStream *stream) {}

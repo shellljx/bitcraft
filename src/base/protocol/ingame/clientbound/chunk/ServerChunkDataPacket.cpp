@@ -4,7 +4,7 @@
 
 #include <memory>
 #include "base/protocol/ClientBoundPackets.h"
-#include "base/model/nbt/TagCompound.h"
+#include "base/model/nbt/Nbt.h"
 #include "base/model/world/BlockEntityInfo.h"
 #include "base/model/world/LightUpdateData.h"
 
@@ -22,7 +22,7 @@ void ServerChunkDataPacket::read(DecodeStream *stream) {
   x_ = stream->readInt32();
   z_ = stream->readInt32();
   //nbt
-  heightMaps_ = TagCompound::Create(stream);
+  heightMaps_ = ReadNbt(stream);
   //chunk data size
   const int datSize = stream->readVarInt();
   //chunk data

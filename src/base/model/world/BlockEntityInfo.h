@@ -4,7 +4,7 @@
 
 #pragma once
 #include "../../io/ReadWriteable.h"
-#include "../nbt/TagCompound.h"
+#include "base/model/nbt/Nbt.h"
 
 namespace bitcraft {
 class BlockEntityInfo : public ReadWriteable {
@@ -20,6 +20,6 @@ class BlockEntityInfo : public ReadWriteable {
   short z_;
   short y_;
   int type_;
-  std::unique_ptr<TagCompound> nbt_ = nullptr;
+  std::shared_ptr<Tag> nbt_ = nullptr;
 };
 }
