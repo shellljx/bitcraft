@@ -199,5 +199,27 @@ class ClientboundRegistryDataPacket : public Packet {
   std::string identifier;
   std::vector<std::shared_ptr<RegistryEntry>> entries;
 };
+
+class ClientboundUpdateTagsPacket : public Packet {
+ public:
+  ClientboundUpdateTagsPacket();
+  ~ClientboundUpdateTagsPacket() override = default;
+
+  void read(DecodeStream *stream) override;
+  void write(EncodeStream *stream) override;
+ private:
+  std::map<std::string, std::map<std::string, std::vector<int>>> tags;
+};
+
+class FinishConfigurationPacket : public Packet {
+ public:
+  FinishConfigurationPacket();
+  ~FinishConfigurationPacket() override = default;
+  void read(DecodeStream *stream) override;
+  void write(EncodeStream *stream) override;
+};
+
+//ingame
+
 }
 #endif //BITCRAFT_LINUX_SRC_BASE_PROTOCOL_CLIENTBOUNDPACKETS_H_

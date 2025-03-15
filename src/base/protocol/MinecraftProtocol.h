@@ -35,6 +35,7 @@ class MinecraftProtocol : public PacketHandler<MinecraftProtocol, LoinPackets> {
   void handle(CustomPayloadPacket &packet);
   void handle(UpdateEnabledFeaturesPacket &packet);
   void handle(SelectKnownPacksPacket &packet);
+  void handle(FinishConfigurationPacket &packet);
  private:
   MinecraftProtocol(const std::string &ip, int port, std::string version);
  private:

@@ -9,7 +9,8 @@
 #include "base/protocol/handshake/HandshakePacket.h"
 #include "base/protocol/login/serverbound/LoginStartPacket.h"
 #include "base/protocol/configuration/serverbound/ServerboundSelectKnownPacksPacket.h"
-#include "base/protocol/data/KnownPack.h"
+#include "base/protocol/configuration/serverbound/AcknowledgeFinishConfigurationPacket.h"
+#include "base/model/configuration/KnownPack.h"
 #include "base/utils/Log.h"
 
 namespace bitcraft {
@@ -43,7 +44,7 @@ void MinecraftProtocol::handleConnected() {
       769, connectSession->getHost(), connectSession->getPort(), static_cast<int>(ProtocolStatus::LOGIN)
   );
   connectSession->post(packetCodec->encode(*handshakePacket));
-  auto loginStartPacket = LoginStartPacket::Make("BCHelloWorld");
+  auto loginStartPacket = LoginStartPacket::Make("shell");
   connectSession->post(packetCodec->encode(*loginStartPacket));
 }
 
@@ -71,6 +72,12 @@ void MinecraftProtocol::handle(bitcraft::SelectKnownPacksPacket &packet) {
   auto sendP = std::make_shared<ServerboundSelectKnownPacksPacket>();
   sendP->setKnownPacks({});
   connectSession->post(packetCodec->encode(*sendP));
+}
+
+void MinecraftProtocol::handle(bitcraft::FinishConfigurationPacket &packet) {
+  auto finishConfiguration = AcknowledgeFinishConfigurationPacket();
+  connectSession->post(packetCodec->encode(finishConfiguration));
+  packetCodec->setState(ProtocolStatus::PLAY);
 }
 
 void MinecraftProtocol::connect() {

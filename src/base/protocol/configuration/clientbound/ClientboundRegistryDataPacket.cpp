@@ -2,7 +2,7 @@
 // Created by shell on 2025/3/13.
 //
 #include "base/protocol/ClientBoundPackets.h"
-#include "base/protocol/data/RegistryEntry.h"
+#include "base/model/configuration/RegistryEntry.h"
 
 namespace bitcraft {
 

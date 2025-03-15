@@ -31,8 +31,10 @@ std::shared_ptr<Packet> createClientBoundPacket(int id, ProtocolStatus status) {
     switch (id) {
       case 0x00:return nullptr;
       case 0x01:return std::shared_ptr<Packet>(new CustomPayloadPacket());
+      case 0x03:return std::shared_ptr<Packet>(new FinishConfigurationPacket());
       case 0x07:return std::shared_ptr<Packet>(new ClientboundRegistryDataPacket());
       case 0x0C:return std::shared_ptr<Packet>(new UpdateEnabledFeaturesPacket());
+      case 0x0D:return std::shared_ptr<Packet>(new ClientboundUpdateTagsPacket());
       case 0x0E:return std::shared_ptr<Packet>(new SelectKnownPacksPacket());
       default:return nullptr;
     }

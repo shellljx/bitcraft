@@ -3,7 +3,7 @@
 //
 
 #include "ServerboundSelectKnownPacksPacket.h"
-#include "base/protocol/data/KnownPack.h"
+#include "base/model/configuration/KnownPack.h"
 
 namespace bitcraft {
 ServerboundSelectKnownPacksPacket::ServerboundSelectKnownPacksPacket() : Packet(0x07) {}

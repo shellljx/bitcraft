@@ -4,7 +4,7 @@
 #include "Nbt.h"
 
 namespace bitcraft {
-constexpr int NBT_MAX_DEPTH = 512;
+#define NBT_MAX_DEPTH 512
 
 std::shared_ptr<Tag> ReadTags(DecodeStream *stream, TagType type, int depth = 0);
 

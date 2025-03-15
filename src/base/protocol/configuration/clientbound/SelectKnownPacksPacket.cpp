@@ -2,7 +2,7 @@
 // Created by shell on 2025/3/12.
 //
 #include "base/protocol/ClientBoundPackets.h"
-#include "base/protocol/data/KnownPack.h"
+#include "base/model/configuration/KnownPack.h"
 
 namespace bitcraft {
 SelectKnownPacksPacket::SelectKnownPacksPacket() : Packet(0x0E) {
