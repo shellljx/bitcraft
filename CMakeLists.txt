@@ -34,12 +34,17 @@ file(GLOB_RECURSE SRC_FILES
         src/rendering/*.*)
 file(GLOB PLATFORM_COMMON_FILES
         src/platform/*.*)
+file(GLOB GPU_COMMON_FILES
+        src/gpu/*.*
+        src/gpu/core/*.*
+        src/gpu/opengl/*.*)
 list(APPEND BITCRAFT_FILES ${SRC_FILES})
-list(APPEND BITCRAFT_FILES ${PLATFORM_COMMON_FILES})
+list(APPEND BITCRAFT_FILES ${PLATFORM_COMMON_FILES} ${GPU_COMMON_FILES})
 
 if (ANDROID)
     file(GLOB_RECURSE PLATFORM_FILES src/platform/android/*.*)
-    list(APPEND BITCRAFT_FILES ${PLATFORM_FILES})
+    file(GLOB_RECURSE GPU_FILES src/gpu/opengl/egl/*.*)
+    list(APPEND BITCRAFT_FILES ${PLATFORM_FILES} ${GPU_FILES})
 endif ()
 
 add_vendor_target(bitcraft-vendor STATIC_VENDORS ${BITCRAFT_STATIC_VENDORS} SHARED_VENDORS ${BITCRAFT_SHARED_VENDORS})
@@ -63,6 +68,10 @@ if (ANDROID)
     list(APPEND BITCRAFT_SHARED_LIBS ${LOG_LIB})
     find_library(ANDROID_LIB android)
     list(APPEND BITCRAFT_SHARED_LIBS ${ANDROID_LIB})
+    find_library(GLESV3_LIB GLESv3)
+    list(APPEND BITCRAFT_SHARED_LIBS ${GLESV3_LIB})
+    find_library(EGL_LIB EGL)
+    list(APPEND BITCRAFT_SHARED_LIBS ${EGL_LIB})
     find_library(JNIGRAPHICS_LIB jnigraphics)
     list(APPEND BITCRAFT_SHARED_LIBS ${JNIGRAPHICS_LIB})
 endif ()

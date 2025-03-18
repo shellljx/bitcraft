@@ -4,6 +4,7 @@
 
 #pragma once
 #include <map>
+#include <vector>
 #include "base/io/ReadWriteable.h"
 
 namespace bitcraft {

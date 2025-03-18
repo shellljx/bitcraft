@@ -15,12 +15,11 @@ import com.gmail.shellljx.bitcraft.ui.theme.BitCraftTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        System.loadLibrary("bitcraft")
         setContent {
             BitCraftTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                    Greeting("text ${AndroidTest().text}")
+                    Greeting("text")
                 }
             }
         }
