@@ -4,10 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/craft_render"
-        android:text="Craft Render"
-        android:layout_marginTop="12dp"
+    <com.gmail.shellljx.bitcraft.CraftView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="match_parent"/>
 </LinearLayout>
