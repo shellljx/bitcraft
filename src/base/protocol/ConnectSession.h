@@ -11,22 +11,15 @@
 #include "base/io/ByteData.h"
 
 namespace bitcraft {
-class MinecraftProtocol;
+class BitcraftClient;
 class ConnectSession {
  public:
-  ConnectSession(std::string ip, uint16_t port, MinecraftProtocol *protocol);
+  ConnectSession(BitcraftClient *protocol);
   ~ConnectSession();
 
-  void connect();
+  void connect(const std::string& host, int16_t port);
   void post(std::unique_ptr<ByteData> data);
 
-  [[nodiscard]] std::string getHost() const {
-    return ip;
-  }
-
-  [[nodiscard]] uint16_t getPort() const {
-    return port;
-  }
  private:
 
   void handleConnect(const asio::error_code &error);
@@ -34,12 +27,10 @@ class ConnectSession {
   void handleWrite(const asio::error_code &error);
  private:
   asio::io_service ioService;
-  std::thread loopThread;
   asio::ip::tcp::socket socket;
-  MinecraftProtocol* protocol;
+  BitcraftClient* protocol;
+  std::thread loopThread;
   uint8_t *buffer = nullptr;
-  std::string ip;
-  uint16_t port;
 };
 }
 

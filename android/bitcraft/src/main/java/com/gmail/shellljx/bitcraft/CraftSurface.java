@@ -52,6 +52,12 @@ public class CraftSurface {
 
     private static native long SetupFromSurfaceWithGLContext(Surface surface, long shareContext);
 
+    public native void updateSize();
+
+    public native boolean clearAll();
+
+    public native void freeCache();
+
     private native void nativeRelease();
 
     private static native void nativeInit();

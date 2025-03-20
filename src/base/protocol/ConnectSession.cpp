@@ -3,15 +3,15 @@
 //
 
 #include "ConnectSession.h"
-#include "MinecraftProtocol.h"
+#include "BitcraftClient.h"
 #include <asio/connect.hpp>
 #include <asio/write.hpp>
 #include <utility>
 
 namespace bitcraft {
 
-ConnectSession::ConnectSession(std::string ip, uint16_t port, MinecraftProtocol *protocol)
-    : socket(ioService), protocol(protocol), ip(std::move(ip)), port(port) {
+ConnectSession::ConnectSession(BitcraftClient *protocol)
+    : socket(ioService), protocol(protocol) {
   buffer = new uint8_t[512];
 }
 
@@ -23,11 +23,13 @@ ConnectSession::~ConnectSession() {
   buffer = nullptr;
 }
 
-void ConnectSession::connect() {
+void ConnectSession::connect(const std::string& host, int16_t port) {
   asio::ip::tcp::resolver resolver(ioService);
-  asio::ip::tcp::resolver::query query(ip, std::to_string(port));
+  asio::ip::tcp::resolver::query query(host, std::to_string(port));
   asio::ip::tcp::resolver::iterator iterator = resolver.resolve(query);
-  asio::async_connect(socket, iterator, std::bind(&ConnectSession::handleConnect, this, std::placeholders::_1));
+  asio::async_connect(socket,
+                      iterator,
+                      std::bind(&ConnectSession::handleConnect, this, std::placeholders::_1));
   loopThread = std::thread([&] {
     std::printf("loop start\n");
     ioService.run();
@@ -69,7 +71,7 @@ void ConnectSession::handleRead(const asio::error_code &error, std::size_t bytes
 }
 
 void ConnectSession::handleWrite(const asio::error_code &error) {
-  if (error){
+  if (error) {
     socket.close();
   }
 }

@@ -7,15 +7,18 @@
 #include "glm/vec4.hpp"
 #include "base/protocol/ClientBoundPackets.h"
 #include "Face.h"
+#include "Graphic.h"
 
-namespace bitcraft{
-class McRenderer {
+namespace bitcraft {
+
+class McRenderer : public Graphic {
  public:
   explicit McRenderer();
-  ~McRenderer();
+  ~McRenderer() override;
 
-  void setData(const ServerChunkDataPacket* packet, int x, int z);
+  void setData(const ServerChunkDataPacket *packet, int x, int z);
 
+  void draw(tgfx::Canvas *canvas) const override;
  private:
 
  private:

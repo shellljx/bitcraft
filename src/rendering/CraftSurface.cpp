@@ -19,6 +19,30 @@ CraftSurface::CraftSurface(std::shared_ptr<Drawable> drawable)
   rootLocker = std::shared_ptr<std::mutex>(new std::mutex);
 }
 
+bool CraftSurface::draw(std::shared_ptr<Graphic> graphic) {
+  if (!drawable->prepareDevice()) {
+    return false;
+  }
+  auto context = lockContext();
+  if (!context) {
+    return false;
+  }
+  if (surface == nullptr) {
+    surface = drawable->createSurface(context);
+  }
+  if (surface == nullptr) {
+    unlockContext();
+    return false;
+  }
+  auto canvas = surface->getCanvas();
+  graphic->draw(canvas);
+  surface->flush();
+  //drawable->setTimeStamp()
+  drawable->present(context);
+  unlockContext();
+  return true;
+}
+
 int CraftSurface::width() {
   LockGuard autoLock(rootLocker);
   return drawable->width();

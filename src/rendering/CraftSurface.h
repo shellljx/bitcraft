@@ -6,10 +6,13 @@
 #define BITCRAFT_CRAFTSURFACE_H
 
 #include "gpu/Surface.h"
+#include "rendering/Graphic.h"
 
 namespace bitcraft {
 
 class Drawable;
+
+class BitcraftClient;
 
 class CraftSurface {
  public:
@@ -32,9 +35,13 @@ class CraftSurface {
 
   explicit CraftSurface(std::shared_ptr<Drawable> drawable);
 
+  bool draw(std::shared_ptr<Graphic> graphic);
+
   tgfx::Context *lockContext();
 
   void unlockContext();
+
+  friend class BitcraftClient;
 };
 }
 

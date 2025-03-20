@@ -9,6 +9,8 @@
 #include "ConnectSession.h"
 #include "base/codec/PacketCodec.h"
 #include "base/protocol/ClientBoundPackets.h"
+#include "rendering/CraftSurface.h"
+#include "rendering/McRenderer.h"
 
 namespace bitcraft {
 using LoinPackets = std::tuple<
@@ -18,17 +20,21 @@ using LoinPackets = std::tuple<
     UpdateEnabledFeaturesPacket,
     SelectKnownPacksPacket
 >;
-class MinecraftProtocol : public PacketHandler<MinecraftProtocol, LoinPackets> {
+class BitcraftClient : public PacketHandler<BitcraftClient, LoinPackets> {
  public:
-  static std::shared_ptr<MinecraftProtocol> Make(const std::string &ip, int port, const std::string &version);
-  ~MinecraftProtocol();
+  static std::shared_ptr<BitcraftClient> Make(int version);
+  ~BitcraftClient();
 
-  void connect();
+  void connect(const std::string &host, int16_t port);
   void handleConnected();
+
+  bool flush();
 
   [[nodiscard]] PacketCodec *getPacketCodec() const {
     return packetCodec;
   }
+
+  void setSurface(std::shared_ptr<CraftSurface> newSurface);
  public:
   void handle(SetCompressionPacket &packet);
   void handle(LoginSuccessPacket &packet);
@@ -37,11 +43,17 @@ class MinecraftProtocol : public PacketHandler<MinecraftProtocol, LoinPackets> {
   void handle(SelectKnownPacksPacket &packet);
   void handle(FinishConfigurationPacket &packet);
  private:
-  MinecraftProtocol(const std::string &ip, int port, std::string version);
+  BitcraftClient(int version);
+  bool flushInternal();
  private:
-  std::string protocolVersion;
-  ConnectSession *connectSession;
-  PacketCodec *packetCodec;
+  int protocolVersion;
+  std::shared_ptr<std::mutex> rootLocker = nullptr;
+  std::shared_ptr<CraftSurface> craftSurface = nullptr;
+  ConnectSession *connectSession = nullptr;
+  PacketCodec *packetCodec = nullptr;
+  std::shared_ptr<McRenderer> mcRenderer = nullptr;
+  std::string serverHost;
+  int16_t serverPort = 0;
 };
 }
 #endif //BITCRAFT_MAC_MINECRAFTPROTOCOL_H
