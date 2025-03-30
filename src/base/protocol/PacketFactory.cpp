@@ -25,7 +25,7 @@ std::shared_ptr<Packet> createClientBoundPacket(int id, ProtocolStatus status) {
     switch (id) {
       case 0x1C:return std::shared_ptr<Packet>(new ClientboundSetPlayerPositionPacket());
       case 0x21:return std::shared_ptr<Packet>(new ServerKeepAlivePacket());
-      case 0x22:return std::shared_ptr<Packet>(new ServerChunkDataPacket());
+      case 0x28:return std::shared_ptr<Packet>(new ChunkDataAndUpdateLightPacket());
       case 0x2C: return std::shared_ptr<Packet>(new ClientboundLoginPacket());
       case 0x42:return std::shared_ptr<Packet>(new ClientboundSynchronizePlayerPositionPacket);
       default:return nullptr;

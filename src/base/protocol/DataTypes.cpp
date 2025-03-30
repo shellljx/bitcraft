@@ -9,7 +9,7 @@
 
 namespace bitcraft {
 
-std::string readUUID(DecodeStream *stream) {
+std::string ReadUUID(DecodeStream *stream) {
   int64_t u1 = stream->readInt64();
   int64_t u2 = stream->readInt64();
 
@@ -21,5 +21,14 @@ std::string readUUID(DecodeStream *stream) {
      << std::setw(4) << ((u2 >> 48) & 0xFFFF) << "-"
      << std::setw(12) << (u2 & 0xFFFFFFFFFFFF);
   return ss.str();
+}
+
+std::unique_ptr<ByteData> ReadPrefixedBytes(DecodeStream *stream,
+                                            std::unique_ptr<ByteData>(*reader)(DecodeStream *, int)) {
+  auto size = stream->readVarInt();
+  if (size <= 0) {
+    return nullptr;
+  }
+  return reader(stream, size);
 }
 }

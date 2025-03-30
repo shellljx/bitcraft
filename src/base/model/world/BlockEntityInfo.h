@@ -9,17 +9,17 @@
 namespace bitcraft {
 class BlockEntityInfo : public ReadWriteable {
  public:
-  BlockEntityInfo();
-  ~BlockEntityInfo() override;
+  BlockEntityInfo() = default;
+  ~BlockEntityInfo() override = default;
 
   void read(DecodeStream *stream) override;
   void write(EncodeStream *stream) override;
 
  private:
-  short x_;
-  short z_;
-  short y_;
-  int type_;
-  std::shared_ptr<Tag> nbt_ = nullptr;
+  int x = 0;
+  int z = 0;
+  short y = 0;
+  int type = 0;
+  std::shared_ptr<Tag> nbt = nullptr;
 };
 }

@@ -16,7 +16,7 @@ class McRenderer : public Graphic {
   explicit McRenderer();
   ~McRenderer() override;
 
-  void setData(const ServerChunkDataPacket *packet, int x, int z);
+  void setData(const ChunkDataAndUpdateLightPacket *packet, int x, int z);
 
   void draw(tgfx::Canvas *canvas) const override;
  private:

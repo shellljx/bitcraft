@@ -8,20 +8,19 @@
 namespace bitcraft {
 class LightUpdateData : public ReadWriteable {
  public:
-  LightUpdateData();
-  ~LightUpdateData() override;
+  LightUpdateData() = default;
+  ~LightUpdateData() override = default;
 
   void read(DecodeStream *stream) override;
   void write(EncodeStream *stream) override;
 
  private:
-  std::vector<unsigned long long int> skyYMask_;
-  std::vector<unsigned long long int> blockYMask_;
-  std::vector<unsigned long long int> emptySkyYMask_;
-  std::vector<unsigned long long int> emptyBlockYMask_;
+  std::vector<unsigned long long int> skyYMask;
+  std::vector<unsigned long long int> blockYMask;
+  std::vector<unsigned long long int> emptySkyYMask;
+  std::vector<unsigned long long int> emptyBlockYMask;
 
-  std::vector<std::unique_ptr<ByteData>> skyUpdates_;
-  std::vector<std::unique_ptr<ByteData>> blockUpdates_;
-  bool trustEdges_;
+  std::vector<std::unique_ptr<ByteData>> skyUpdates;
+  std::vector<std::unique_ptr<ByteData>> blockUpdates;
 };
 }

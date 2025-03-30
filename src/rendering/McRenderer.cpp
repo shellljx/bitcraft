@@ -170,12 +170,12 @@ void McRenderer::draw(tgfx::Canvas *canvas) const {
 
 }
 
-void McRenderer::setData(const ServerChunkDataPacket *packet, int cx, int cz) {
+void McRenderer::setData(const ChunkDataAndUpdateLightPacket *packet, int cx, int cz) {
   if (count >= 4) {
     return;
   }
   count++;
-  auto chunkData = packet->getChunkData();
+  auto chunkData = packet->chunkData();
   for (int sectionY = 0; sectionY < 256 / 16; ++sectionY) {
     short blockCount = chunkData.readInt16();
     unsigned char bits_per_block = chunkData.readUint8();

@@ -5,22 +5,15 @@
 #include "BlockEntityInfo.h"
 
 namespace bitcraft {
-BlockEntityInfo::BlockEntityInfo() {
-}
-
-BlockEntityInfo::~BlockEntityInfo() = default;
-
 void BlockEntityInfo::write(EncodeStream *stream) {
-
 }
 
 void BlockEntityInfo::read(DecodeStream *stream) {
-  int8_t xz = stream->readInt8();
-  int blockEntityX = (xz >> 4) & 15;
-  int blockEntityZ = xz & 15;
-  int blockEntityY = stream->readInt16();
-  type_ = stream->readVarInt();
-  //nbt
-  nbt_ = ReadNbt(stream);
+  uint8_t xz = stream->readUint8();
+  x = xz >> 4;
+  z = xz & 15;
+  y = stream->readInt16();
+  type = stream->readVarInt();
+  nbt = ReadNbt(stream);
 }
 }

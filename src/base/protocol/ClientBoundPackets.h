@@ -115,19 +115,21 @@ class TagCompound;
 class BlockEntityInfo;
 class LightUpdateData;
 
-class ServerChunkDataPacket : public Packet {
+class ChunkDataAndUpdateLightPacket : public Packet {
  public:
-  ServerChunkDataPacket();
-  ~ServerChunkDataPacket() override;
+  ChunkDataAndUpdateLightPacket();
+  ~ChunkDataAndUpdateLightPacket() override;
 
   void read(DecodeStream *stream) override;
   void write(EncodeStream *stream) override;
+
+  [[nodiscard]] DecodeStream chunkData() const;
 
  private:
   int x = 0;
   int z = 0;
   std::shared_ptr<Tag> heightMaps = nullptr;
-  std::unique_ptr<ByteData> chunkData = nullptr;
+  std::unique_ptr<ByteData> chunkData_ = nullptr;
   std::vector<std::unique_ptr<BlockEntityInfo>> blockEntities;
   std::unique_ptr<LightUpdateData> lightUpdateData;
 };

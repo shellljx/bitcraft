@@ -16,7 +16,7 @@ void LoginSuccessPacket::write(EncodeStream *stream) {
 }
 
 void LoginSuccessPacket::read(DecodeStream *stream) {
-  uuid = readUUID(stream);
+  uuid = ReadUUID(stream);
   userName = stream->readVarString();
 }
 }

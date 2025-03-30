@@ -3,57 +3,38 @@
 //
 
 #include "LightUpdateData.h"
+#include "base/protocol/DataTypes.h"
+
 namespace bitcraft {
-LightUpdateData::LightUpdateData() {
+void LightUpdateData::write(EncodeStream *stream) {
 }
 
-LightUpdateData::~LightUpdateData() = default;
+std::vector<unsigned long long int> ReadLongArray(DecodeStream *stream, int size) {
+  auto array = std::vector<unsigned long long int>(size);
+  for (int i = 0; i < size; i++) {
+    array[i] = stream->readUint64();
+  }
+  return array;
+}
 
-void LightUpdateData::write(EncodeStream *stream) {
+std::unique_ptr<ByteData> ReadLightData(DecodeStream *stream, int size) {
+  return stream->readByteData(size);
+}
 
+std::vector<std::unique_ptr<ByteData>> ReadByteDataArray(DecodeStream *stream, int size) {
+  auto array = std::vector<std::unique_ptr<ByteData>>(size);
+  for (int i = 0; i < size; i++) {
+    array[i] = ReadPrefixedBytes(stream, ReadLightData);
+  }
+  return array;
 }
 
 void LightUpdateData::read(DecodeStream *stream) {
-  trustEdges_ = stream->readBoolean();
-
-  const int skyYMaskSize = stream->readVarInt();
-  skyYMask_ = std::vector<unsigned long long int>(skyYMaskSize);
-  for (int i = 0; i < skyYMaskSize; ++i) {
-    skyYMask_[i] = stream->readUint64();
-  }
-
-  const int blockYMaskSize = stream->readVarInt();
-  blockYMask_ = std::vector<unsigned long long int>(blockYMaskSize);
-  for (int i = 0; i < blockYMaskSize; ++i) {
-    blockYMask_[i] = stream->readUint64();
-  }
-
-  const int emptySkyYMaskSize = stream->readVarInt();
-  emptySkyYMask_ = std::vector<unsigned long long int>(emptySkyYMaskSize);
-  for (int i = 0; i < emptySkyYMaskSize; ++i) {
-    emptySkyYMask_[i] = stream->readUint64();
-  }
-
-  const int emptyBlockYMaskSize = stream->readVarInt();
-  emptyBlockYMask_ = std::vector<unsigned long long int>(emptyBlockYMaskSize);
-  for (int i = 0; i < emptyBlockYMaskSize; ++i) {
-    emptyBlockYMask_[i] = stream->readUint64();
-  }
-
-  const int skyUpdateSize = stream->readVarInt();
-  skyUpdates_ = std::vector<std::unique_ptr<ByteData>>(skyUpdateSize);
-  for (int i = 0; i < skyUpdateSize; ++i) {
-    //2048
-    const int length = stream->readVarInt();
-    skyUpdates_[i] = stream->readByteData(length);
-  }
-
-  const int blockUpdateSize = stream->readVarInt();
-  blockUpdates_ = std::vector<std::unique_ptr<ByteData>>(blockUpdateSize);
-  for (int i = 0; i < blockUpdateSize; ++i) {
-    //2048
-    const int length = stream->readVarInt();
-    blockUpdates_[i] = stream->readByteData(length);
-  }
+  skyYMask = ReadPrefixedArray(stream, ReadLongArray);
+  blockYMask = ReadPrefixedArray(stream, ReadLongArray);
+  emptySkyYMask = ReadPrefixedArray(stream, ReadLongArray);
+  emptyBlockYMask = ReadPrefixedArray(stream, ReadLongArray);
+  skyUpdates = ReadPrefixedArray(stream, ReadByteDataArray);
+  blockUpdates = ReadPrefixedArray(stream, ReadByteDataArray);
 }
 }

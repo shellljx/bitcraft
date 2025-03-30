@@ -10,7 +10,7 @@ ClientboundSpawnEntityPacket::ClientboundSpawnEntityPacket() : Packet(0x01) {}
 
 void ClientboundSpawnEntityPacket::read(bitcraft::DecodeStream *stream) {
   entityId = stream->readVarInt();
-  uuid = readUUID(stream);
+  uuid = ReadUUID(stream);
   type = stream->readVarInt();
   x = stream->readDouble();
   y = stream->readDouble();
