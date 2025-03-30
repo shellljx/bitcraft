@@ -37,11 +37,11 @@ void PacketCodec::decode(std::unique_ptr<ByteData> data) {
 void PacketCodec::decodePacket(const std::unique_ptr<ByteData> data) {
   auto decodeStream = DecodeStream(data->data(), data->length());
   int packetId = decodeStream.readVarInt();
+  LOGI("decode packet id %d", packetId);
   auto packet = createClientBoundPacket(packetId, status);
   if (packet == nullptr) {
     return;
   }
-  LOGI("decode packet id %d", packetId);
   packet->read(&decodeStream);
   dispatchPacket(*packet);
 }

@@ -123,25 +123,13 @@ class ServerChunkDataPacket : public Packet {
   void read(DecodeStream *stream) override;
   void write(EncodeStream *stream) override;
 
-  DecodeStream getChunkData() const {
-    return DecodeStream(chunkData_->data(), chunkData_->length());
-  }
-
-  int getX() const {
-    return x_;
-  }
-
-  int getZ() const {
-    return z_;
-  }
-
  private:
-  int x_;
-  int z_;
-  std::shared_ptr<Tag> heightMaps_ = nullptr;
-  std::unique_ptr<ByteData> chunkData_ = nullptr;
-  std::vector<std::unique_ptr<BlockEntityInfo>> blockEntities_;
-  std::unique_ptr<LightUpdateData> lightUpdateData_;
+  int x = 0;
+  int z = 0;
+  std::shared_ptr<Tag> heightMaps = nullptr;
+  std::unique_ptr<ByteData> chunkData = nullptr;
+  std::vector<std::unique_ptr<BlockEntityInfo>> blockEntities;
+  std::unique_ptr<LightUpdateData> lightUpdateData;
 };
 
 //configuration
@@ -221,5 +209,102 @@ class FinishConfigurationPacket : public Packet {
 
 //ingame
 
+class ClientboundSpawnEntityPacket : public Packet {
+ public:
+  ClientboundSpawnEntityPacket();
+  ~ClientboundSpawnEntityPacket() override = default;
+
+  void read(DecodeStream *stream) override;
+  void write(EncodeStream *stream) override;
+
+ private:
+  int entityId{};
+  std::string uuid;
+  int type{};
+  double x{};
+  double y{};
+  double z{};
+  int pitch{};
+  int yaw{};
+  int headYaw{};
+  int data{};
+  short velocityX{};
+  short velocityY{};
+  short velocityZ{};
+};
+
+class PlayerSpawnInfo;
+
+class ClientboundLoginPacket : public Packet {
+ public:
+  ClientboundLoginPacket();
+  ~ClientboundLoginPacket() override = default;
+
+  void read(DecodeStream *stream) override;
+  void write(EncodeStream *stream) override;
+ private:
+  int32_t entityId{};
+  bool hardcore{};
+  std::vector<std::string> dimensions;
+  int maxPlayers{};
+  int viewDistance{};
+  int simulationDistance{};
+  bool reducedDebugInfo{};
+  bool enableRespawnScreen{};
+  bool doLimitedCrafting{};
+  std::shared_ptr<PlayerSpawnInfo> playerSpawnInfo = nullptr;
+  bool enforceSecureChat{};
+};
+
+class ClientboundChangeDifficultyPacket : public Packet {
+ public:
+  ClientboundChangeDifficultyPacket();
+  ~ClientboundChangeDifficultyPacket() override = default;
+
+  void read(DecodeStream *stream) override;
+  void write(EncodeStream *stream) override;
+
+ private:
+  int difficulty{};
+  bool difficultyLock{};
+};
+
+class ClientboundSetPlayerPositionPacket : public Packet {
+ public:
+  ClientboundSetPlayerPositionPacket();
+  ~ClientboundSetPlayerPositionPacket() override = default;
+
+  void read(DecodeStream *stream) override;
+  void write(EncodeStream *stream) override;
+
+ private:
+  double x;
+  double feetY;
+  double z;
+  int flags;
+};
+
+class ClientboundSynchronizePlayerPositionPacket : public Packet {
+ public:
+  ClientboundSynchronizePlayerPositionPacket() : Packet(0x42) {}
+  ~ClientboundSynchronizePlayerPositionPacket() override = default;
+
+  void read(DecodeStream *stream) override;
+  void write(EncodeStream *stream) override;
+
+ private:
+  int teleportId{};
+  double x{};
+  double y{};
+  double z{};
+  double velocityX{};
+  double velocityY{};
+  double velocityZ{};
+  float yaw{};
+  float pitch{};
+  int flags{};
+
+  friend class BitcraftClient;
+};
 }
 #endif //BITCRAFT_LINUX_SRC_BASE_PROTOCOL_CLIENTBOUNDPACKETS_H_

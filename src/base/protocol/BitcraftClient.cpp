@@ -5,12 +5,13 @@
 #include "BitcraftClient.h"
 #include "base/utils/ScopedLock.h"
 #include "base/utils/LockGuard.h"
-#include <functional>
-#include <utility>
 #include "base/protocol/handshake/HandshakePacket.h"
 #include "base/protocol/login/serverbound/LoginStartPacket.h"
 #include "base/protocol/configuration/serverbound/ServerboundSelectKnownPacksPacket.h"
 #include "base/protocol/configuration/serverbound/AcknowledgeFinishConfigurationPacket.h"
+#include "base/protocol/ingame/serverbound/ServerboundPlayerLoadedPacket.h"
+#include "base/protocol/ingame/serverbound/ConfirmTeleportationPacket.h"
+#include "base/protocol/ingame/serverbound/ServerboundChatPacket.h"
 #include "base/model/configuration/KnownPack.h"
 #include "base/utils/Log.h"
 
@@ -41,7 +42,7 @@ BitcraftClient::~BitcraftClient() {
 void BitcraftClient::handleConnected() {
   packetCodec->setState(ProtocolStatus::LOGIN);
   auto handshakePacket = HandshakePacket::Make(
-      769,
+      protocolVersion,
       serverHost,
       serverPort,
       static_cast<int>(ProtocolStatus::LOGIN)
@@ -111,6 +112,18 @@ void BitcraftClient::handle(bitcraft::FinishConfigurationPacket &packet) {
   auto finishConfiguration = AcknowledgeFinishConfigurationPacket();
   connectSession->post(packetCodec->encode(finishConfiguration));
   packetCodec->setState(ProtocolStatus::PLAY);
+}
+
+void BitcraftClient::handle(bitcraft::ClientboundLoginPacket &packet) {
+  auto playerLoaded = ServerboundPlayerLoadedPacket();
+  connectSession->post(packetCodec->encode(playerLoaded));
+}
+
+void BitcraftClient::handle(bitcraft::ClientboundSynchronizePlayerPositionPacket &packet) {
+  auto confirmTeleportation = ConfirmTeleportationPacket(packet.teleportId);
+  connectSession->post(packetCodec->encode(confirmTeleportation));
+  auto chat = ServerboundChatPacket();
+  connectSession->post(packetCodec->encode(chat));
 }
 
 void BitcraftClient::connect(const std::string &host, int16_t port) {

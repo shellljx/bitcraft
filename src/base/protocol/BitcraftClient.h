@@ -18,7 +18,10 @@ using LoinPackets = std::tuple<
     LoginSuccessPacket,
     CustomPayloadPacket,
     UpdateEnabledFeaturesPacket,
-    SelectKnownPacksPacket
+    SelectKnownPacksPacket,
+    FinishConfigurationPacket,
+    ClientboundLoginPacket,
+    ClientboundSynchronizePlayerPositionPacket
 >;
 class BitcraftClient : public PacketHandler<BitcraftClient, LoinPackets> {
  public:
@@ -35,13 +38,15 @@ class BitcraftClient : public PacketHandler<BitcraftClient, LoinPackets> {
   }
 
   void setSurface(std::shared_ptr<CraftSurface> newSurface);
- public:
+ private:
   void handle(SetCompressionPacket &packet);
   void handle(LoginSuccessPacket &packet);
   void handle(CustomPayloadPacket &packet);
   void handle(UpdateEnabledFeaturesPacket &packet);
   void handle(SelectKnownPacksPacket &packet);
   void handle(FinishConfigurationPacket &packet);
+  void handle(ClientboundLoginPacket &packet);
+  void handle(ClientboundSynchronizePlayerPositionPacket &packet);
  private:
   BitcraftClient(int version);
   bool flushInternal();
@@ -54,6 +59,8 @@ class BitcraftClient : public PacketHandler<BitcraftClient, LoinPackets> {
   std::shared_ptr<McRenderer> mcRenderer = nullptr;
   std::string serverHost;
   int16_t serverPort = 0;
+
+  friend class PacketHandler;
 };
 }
 #endif //BITCRAFT_MAC_MINECRAFTPROTOCOL_H
