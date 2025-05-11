@@ -4,7 +4,6 @@
 
 #pragma once
 #include "Atlas.h"
-#include "BlockStates.h"
 
 namespace bitcraft {
 class AssetManager {
@@ -21,7 +20,6 @@ class AssetManager {
 
  private:
   std::shared_ptr<Atlas> atlas_ = nullptr;
-  std::map<int, std::shared_ptr<BlockStates>> block_states_;
 };
 }
 

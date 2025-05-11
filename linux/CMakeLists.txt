@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.27)
 project(BitCraft-linux)
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_FLAGS "-framework Cocoa -framework OpenGL -framework IOKit")
 
 set(BITCRAFT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../)
 add_subdirectory(${BITCRAFT_DIR} EXCLUDE_FROM_ALL build)

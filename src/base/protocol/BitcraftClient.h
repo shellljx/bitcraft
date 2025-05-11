@@ -11,6 +11,7 @@
 #include "base/protocol/ClientBoundPackets.h"
 #include "rendering/CraftSurface.h"
 #include "rendering/McRenderer.h"
+#include "rendering/AssetManager.h"
 
 namespace bitcraft {
 using LoinPackets = std::tuple<
@@ -57,6 +58,7 @@ class BitcraftClient : public PacketHandler<BitcraftClient, LoinPackets> {
   ConnectSession *connectSession = nullptr;
   PacketCodec *packetCodec = nullptr;
   std::shared_ptr<McRenderer> mcRenderer = nullptr;
+  std::shared_ptr<AssetManager> assetManager;
   std::string serverHost;
   int16_t serverPort = 0;
 

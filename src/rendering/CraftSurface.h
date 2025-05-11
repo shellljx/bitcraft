@@ -35,7 +35,7 @@ class CraftSurface {
 
   explicit CraftSurface(std::shared_ptr<Drawable> drawable);
 
-  bool draw(std::shared_ptr<Graphic> graphic);
+  bool draw(const std::shared_ptr<Graphic>& graphic);
 
   tgfx::Context *lockContext();
 

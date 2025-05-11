@@ -31,6 +31,7 @@ list(APPEND BITCRAFT_INCLUDES third_party/zlib)
 
 file(GLOB_RECURSE SRC_FILES
         src/base/*.*
+        src/minecraft/*.*
         src/rendering/*.*)
 file(GLOB PLATFORM_COMMON_FILES
         src/platform/*.*)

@@ -5,7 +5,7 @@
 #pragma once
 
 namespace bitcraft {
-class BlockStates {
+class BlockState {
 
 };
 }

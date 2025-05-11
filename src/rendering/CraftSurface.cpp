@@ -3,6 +3,8 @@
 //
 
 #include "CraftSurface.h"
+
+#include <memory>
 #include "rendering/Drawable.h"
 #include "base/utils/LockGuard.h"
 
@@ -16,10 +18,10 @@ std::shared_ptr<CraftSurface> CraftSurface::MakeFrom(std::shared_ptr<Drawable> d
 
 CraftSurface::CraftSurface(std::shared_ptr<Drawable> drawable)
     : drawable(std::move(drawable)) {
-  rootLocker = std::shared_ptr<std::mutex>(new std::mutex);
+  rootLocker = std::make_shared<std::mutex>();
 }
 
-bool CraftSurface::draw(std::shared_ptr<Graphic> graphic) {
+bool CraftSurface::draw(const std::shared_ptr<Graphic>& graphic) {
   if (!drawable->prepareDevice()) {
     return false;
   }
