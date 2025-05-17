@@ -26,7 +26,7 @@ bool Drawable::prepareDevice() {
   return currentDevice != nullptr;
 }
 
-bool Drawable::freeDevice() {
+void Drawable::freeDevice() {
   currentDevice = nullptr;
 }
 }

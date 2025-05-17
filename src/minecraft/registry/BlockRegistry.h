@@ -27,7 +27,7 @@ class Block {
 };
 
 class BlockRegistry {
-  
+
 };
 }
 

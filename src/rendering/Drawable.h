@@ -30,7 +30,7 @@ class Drawable {
 
   virtual bool prepareDevice();
 
-  virtual bool freeDevice();
+  virtual void freeDevice();
 
  protected:
   virtual std::shared_ptr<tgfx::Device> getDevice() = 0;

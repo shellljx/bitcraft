@@ -6,6 +6,6 @@
 
 namespace bitcraft {
 std::shared_ptr<CraftAssets> CraftAssets::Load(const std::string &path) {
-
+  return nullptr;
 }
 }

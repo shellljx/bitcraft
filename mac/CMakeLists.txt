@@ -9,7 +9,13 @@ include_directories(${BITCRAFT_DIR}/src)
 
 list(APPEND BITCRAFT_INCLUDES vendor/glfw/mac/include)
 
-add_executable(bitcraft-mac main.cpp)
+add_executable(bitcraft-mac
+        main.cpp
+        rendering/GLFWDrawable.cpp
+        rendering/GLFWDevice.cpp
+        rendering/GLFWProxyWindow.cpp
+        rendering/OpenGLProcGetter.cpp
+)
 
 #list(APPEND libs ${CMAKE_CURRENT_SOURCE_DIR}/vendor/libpag/mac/arm64/libMcProxy.a)
 list(APPEND libs bitcraft)

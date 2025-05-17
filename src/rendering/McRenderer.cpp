@@ -3,15 +3,12 @@
 //
 
 #include "McRenderer.h"
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 #include <vector>
-#include <stdlib.h>
 #include "Atlas.h"
-#include "AssetManager.h"
 #include "model/Model.h"
 #include "gpu/opengl/GLRenderTarget.h"
 #include "gpu/Surface.h"
+#include "gpu/opengl/GLFunctions.h"
 
 namespace bitcraft {
 
@@ -167,7 +164,10 @@ std::unique_ptr<Model> createModel(int id) {
 }
 
 void McRenderer::draw(tgfx::Canvas *canvas) const {
-
+  // 渲染
+  auto gl = tgfx::GLFunctions::Get(canvas->getContext());
+  gl->clearColor(0.3f, 0.3f, 0.2f, 1.0f);
+  gl->clear(GL_COLOR_BUFFER_BIT);
 }
 
 void McRenderer::setData(const ChunkDataAndUpdateLightPacket *packet, int cx, int cz) {
